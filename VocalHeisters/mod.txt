@@ -1,0 +1,34 @@
+{
+    "blt_version" : 2,
+    "name": "Vocal Heisters",
+    "description": "Makes heisters talk more during heists",
+    "author": "Rokk",
+    "contact": "http://steamcommunity.com/id/Rokk or Rokk#8740",
+    "version": "1.0",
+    "hooks": [
+        {
+            "hook_id": "lib/managers/challengemanager",
+            "script_path": "lua/challengemanager.lua"
+        },
+        {
+            "hook_id": "lib/managers/playermanager",
+            "script_path": "lua/playermanager.lua"
+        },
+        {
+            "hook_id": "lib/managers/group_ai_states/groupaistatebase",
+            "script_path": "lua/groupaistatebase.lua"
+        },
+        {
+            "hook_id": "lib/units/beings/player/playerdamage",
+            "script_path": "lua/playerdamage.lua"
+        },
+        {
+            "hook_id": "lib/units/beings/player/states/playerstandard",
+            "script_path": "lua/playerstandard.lua"
+        },
+        {
+            "hook_id": "lib/units/beings/player/states/playertased",
+            "script_path": "lua/playertased.lua"
+        }
+    ]
+}
