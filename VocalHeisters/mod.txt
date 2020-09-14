@@ -3,7 +3,7 @@
     "name": "Vocal Heisters",
     "description": "Makes heisters talk more during heists",
     "author": "Rokk",
-    "contact": "http://steamcommunity.com/id/Rokk or Rokk#8740",
+    "contact": "http://steamcommunity.com/id/Rokk or morerokk#2048",
     "version": "1.0",
     "hooks": [
         {
@@ -30,5 +30,13 @@
             "hook_id": "lib/units/beings/player/states/playertased",
             "script_path": "lua/playertased.lua"
         }
-    ]
+    ],
+	"updates" : [
+		{
+			"identifier" : "vocalheisters",
+			"host" : {
+				"meta" : "https://github.com/HugoZink/PD2_VocalHeisters/releases/download/pd2mod_release/meta.json"
+			}
+		}
+	]
 }
