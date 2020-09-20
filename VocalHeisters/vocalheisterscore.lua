@@ -4,7 +4,9 @@ if not VocalHeisters then
     VocalHeisters.SavePath = SavePath .. "/vocalheisters.json"
 
     VocalHeisters.Settings = {
-        disable_voice_line_force_loading = false
+        disable_voice_line_force_loading = false,
+        enable_sync = true,
+        enable_anticipation_lines = true
     }
 
     -- Dice roll value that determines which peer will say voice lines that should only be played once.
@@ -29,9 +31,9 @@ if not VocalHeisters then
     function VocalHeisters:Load()
         local file = io.open(self.SavePath, "r")
         if file then
-            local fileSettings = json.decode(file:read("*all"))
+            local fileSettings = json.decode(file:read("*all")) or {}
             for k, v in pairs(fileSettings) do
-                VocalHeisters.Settings[k] = v
+                self.Settings[k] = v
             end
             file:close()
         end
@@ -44,7 +46,7 @@ if not VocalHeisters then
     -- Generic function that makes the player say a voice line
     function VocalHeisters:Say(voice_id)
         if Utils:IsInHeist() and not Utils:IsInCustody() and Utils:IsInGameState() then
-            managers.player:local_player():sound():say(voice_id, true, false)
+            managers.player:local_player():sound():say(voice_id, self.Settings.enable_sync, false)
         end
     end
 
@@ -59,8 +61,15 @@ if not VocalHeisters then
     function VocalHeisters:SayThirdPersonLine(voice_id)
         if Utils:IsInHeist() and not Utils:IsInCustody() and Utils:IsInGameState() then
             managers.player:local_player():sound()._unit:sound_source():set_switch("int_ext", "third")
-            managers.player:local_player():sound():say(voice_id, true, false)
+            managers.player:local_player():sound():say(voice_id, self.Settings.enable_sync, false)
             managers.player:local_player():sound()._unit:sound_source():set_switch("int_ext", "first")
+        end
+    end
+
+    -- Same as SayOnce *and* SayThirdPersonLine.
+    function VocalHeisters:SayOnceThirdPersonLine(voice_id)
+        if not self.LostDiceRoll then
+            self:SayThirdPersonLine(voice_id)
         end
     end
 
@@ -74,30 +83,37 @@ if not VocalHeisters then
             end
         end
     end
-    
-    -- On network load complete, tell peers that you have Vocal Heisters installed.
-    -- Also give them your dice roll number, which is used for determining who says an end of assault line.
-    Hooks:Add('BaseNetworkSessionOnLoadComplete', 'BaseNetworkSessionOnLoadComplete_VocalHeisters', function(local_peer, id)
-        LuaNetworking:SendToPeers("vocalheisters_hello", tostring(math.floor(VocalHeisters.SayOnceDiceRoll)))
-    end)
 
-    -- Same as above, if a single peer joins then tell them your dice roll.
-    Hooks:Add('BaseNetworkSessionOnPeerEnteredLobby', 'BaseNetworkSessionOnPeerEnteredLobby_VocalHeisters', function(peer, peer_id)
-        LuaNetworking:SendToPeer(peer_id, "vocalheisters_hello", tostring(math.floor(VocalHeisters.SayOnceDiceRoll)))
-    end)
-    
-    -- Network data receiving function
-    Hooks:Add('NetworkReceivedData', 'NetworkReceivedData_VocalHeisters', function(sender, messageType, data)
-        -- Acknowledge that a peer has this mod installed and store their dice roll number
-        if messageType == "vocalheisters_hello" then
-            VocalHeisters.PeersWithMod[sender] = tonumber(data)
+    -- The following things below are networking functions, these are disabled if sync is disabled.
+    -- Unsynced clients should not participate in the dicerolls.
+    -- This may result in local SayOnce voiceline duplication if at least one person has sync enabled and you have it disabled.
+    -- I can't do anything about this.
+    -- Solution: don't disable sync ;)
+    if VocalHeisters.Settings.enable_sync then
+        -- On network load complete, tell peers that you have Vocal Heisters installed.
+        -- Also give them your dice roll number, which is used for determining who says an end of assault line.
+        Hooks:Add('BaseNetworkSessionOnLoadComplete', 'BaseNetworkSessionOnLoadComplete_VocalHeisters', function(local_peer, id)
+            LuaNetworking:SendToPeers("vocalheisters_hello", tostring(math.floor(VocalHeisters.SayOnceDiceRoll)))
+        end)
+
+        -- Same as above, if a single peer joins then tell them your dice roll.
+        Hooks:Add('BaseNetworkSessionOnPeerEnteredLobby', 'BaseNetworkSessionOnPeerEnteredLobby_VocalHeisters', function(peer, peer_id)
+            LuaNetworking:SendToPeer(peer_id, "vocalheisters_hello", tostring(math.floor(VocalHeisters.SayOnceDiceRoll)))
+        end)
+        
+        -- Network data receiving function
+        Hooks:Add('NetworkReceivedData', 'NetworkReceivedData_VocalHeisters', function(sender, messageType, data)
+            -- Acknowledge that a peer has this mod installed and store their dice roll number
+            if messageType == "vocalheisters_hello" then
+                VocalHeisters.PeersWithMod[sender] = tonumber(data)
+                VocalHeisters:_recalculate_dice_roll()
+            end
+        end)
+
+        -- If a peer leaves, remove them from the list
+        Hooks:Add('BaseNetworkSessionOnPeerRemoved', 'BaseNetworkSessionOnPeerRemoved_VocalHeisters', function(peer, peer_id, reason)
+            VocalHeisters.PeersWithMod[peer_id] = nil
             VocalHeisters:_recalculate_dice_roll()
-        end
-    end)
-
-    -- If a peer leaves, remove them from the list
-    Hooks:Add('BaseNetworkSessionOnPeerRemoved', 'BaseNetworkSessionOnPeerRemoved_VocalHeisters', function(peer, peer_id, reason)
-        VocalHeisters.PeersWithMod[peer_id] = nil
-        VocalHeisters:_recalculate_dice_roll()
-    end)
+        end)
+    end
 end

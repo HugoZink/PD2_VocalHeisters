@@ -19,6 +19,13 @@ Hooks:PostHook(PlayerDamage, "damage_killzone", "vocalheisters_playerdamage_kill
         return
     end
 
+    -- Fire damage always seems to be 0.5, gas damage is generally 0.75
+    -- Don't play a line on 0.5
+    -- TODO: Move this code to KillzoneManager
+    if attack_data.damage == 0.5 then
+        return
+    end
+
     -- Check if the last instance of saying the line was more than 10 seconds ago
     if (os.clock() - last_gas_speak_time) > 10 then
         VocalHeisters:Say("g42x_any")
