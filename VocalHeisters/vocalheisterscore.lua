@@ -46,7 +46,10 @@ if not VocalHeisters then
     -- Generic function that makes the player say a voice line
     function VocalHeisters:Say(voice_id)
         if Utils:IsInHeist() and not Utils:IsInCustody() and Utils:IsInGameState() then
-            managers.player:local_player():sound():say(voice_id, self.Settings.enable_sync, false)
+            -- Thanks BLT and PD2 for forcing me to add even more of this nonsense
+            if managers and managers.player and managers.player:local_player() and managers.player:local_player():sound() then
+                managers.player:local_player():sound():say(voice_id, self.Settings.enable_sync, false)
+            end
         end
     end
 
@@ -60,9 +63,11 @@ if not VocalHeisters then
     -- Function that makes the player say lines that are normally third-person only
     function VocalHeisters:SayThirdPersonLine(voice_id)
         if Utils:IsInHeist() and not Utils:IsInCustody() and Utils:IsInGameState() then
-            managers.player:local_player():sound()._unit:sound_source():set_switch("int_ext", "third")
-            managers.player:local_player():sound():say(voice_id, self.Settings.enable_sync, false)
-            managers.player:local_player():sound()._unit:sound_source():set_switch("int_ext", "first")
+            if managers and managers.player and managers.player:local_player() and managers.player:local_player():sound() and managers.player:local_player():sound()._unit then
+                managers.player:local_player():sound()._unit:sound_source():set_switch("int_ext", "third")
+                managers.player:local_player():sound():say(voice_id, self.Settings.enable_sync, false)
+                managers.player:local_player():sound()._unit:sound_source():set_switch("int_ext", "first")
+            end
         end
     end
 

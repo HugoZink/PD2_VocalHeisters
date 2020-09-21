@@ -19,6 +19,10 @@
             "script_path": "lua/hudmanager.lua"
         },
         {
+            "hook_id": "lib/managers/killzonemanager",
+            "script_path": "lua/killzonemanager.lua"
+        },
+        {
             "hook_id": "lib/managers/group_ai_states/groupaistatebase",
             "script_path": "lua/groupaistatebase.lua"
         },
