@@ -4,7 +4,7 @@
     "description": "Makes heisters talk more during heists",
     "author": "Rokk",
     "contact": "http://steamcommunity.com/id/Rokk or morerokk#2048",
-    "version": "1.0",
+    "version": "1.2",
     "hooks": [
         {
             "hook_id": "lib/managers/challengemanager",
@@ -43,9 +43,13 @@
             "script_path": "lua/loadallvoicelines.lua"
         },
         {
+            "hook_id": "lib/units/props/carrydata",
+            "script_path": "lua/carrydata.lua"
+        },
+        {
             "hook_id": "lib/managers/menumanager",
             "script_path": "menu/vocalheistersmenu.lua"
-        },
+        }
     ],
 	"updates" : [
 		{
