@@ -1,5 +1,9 @@
 dofile(ModPath .. "vocalheisterscore.lua")
 
+-- This isn't even 100% reliable, some instances of teargas don't trigger this but trigger the firedamage function instead
+-- On top of that, the FWB thermite triggers this teargas line here too
+-- Thanks overkill
+
 -- Play a teargas voice line
 local last_gas_speak_time = 0
 

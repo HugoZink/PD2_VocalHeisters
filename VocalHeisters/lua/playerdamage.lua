@@ -2,7 +2,7 @@ dofile(ModPath .. "vocalheisterscore.lua")
 
 -- Play a flashbanged voice line
 Hooks:PostHook(PlayerDamage, "on_flashbanged", "vocalheisters_playerdamage_flashbanged", function(self)
-    DelayedCalls:Add("vocalheisters_playerdamage_commentflashbang", 1, function()
+    DelayedCalls:Add("vocalheisters_playerdamage_commentflashbang", math.random() + 0.5, function()
         VocalHeisters:Say("g41x_any")
     end)
 end)

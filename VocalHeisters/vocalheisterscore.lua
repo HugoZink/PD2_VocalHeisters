@@ -89,6 +89,11 @@ if not VocalHeisters then
         end
     end
 
+    -- Get a random voice delay instead of always the same 5 seconds
+    function VocalHeisters:FloatRandom(min, max)
+        return math.random() + math.random(min, max - 1)
+    end
+
     -- The following things below are networking functions, these are disabled if sync is disabled.
     -- Unsynced clients should not participate in the dicerolls.
     -- This may result in local SayOnce voiceline duplication if at least one person has sync enabled and you have it disabled.

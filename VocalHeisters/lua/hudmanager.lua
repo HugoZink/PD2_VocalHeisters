@@ -20,7 +20,7 @@ if VocalHeisters.Settings.enable_anticipation_lines then
             return
         end
 
-        DelayedCalls:Add("vocalheisters_sayassaultline_" .. anticipation_lines[index], 5, function()
+        DelayedCalls:Add("vocalheisters_sayassaultline_" .. anticipation_lines[index], VocalHeisters:FloatRandom(4, 7), function()
             VocalHeisters:SayOnceThirdPersonLine(anticipation_lines[index])
         end)
     end)
