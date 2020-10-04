@@ -1,5 +1,9 @@
 dofile(ModPath .. "vocalheisterscore.lua")
 
+-- Which lines to play as a response to Bain announcing an assault
+-- 2 and 6 are "30 seconds remaining",
+-- 3 and 7 are 20 secs,
+-- 4 and 8 are 10 secs remaining
 local anticipation_lines = {
     [2] = "g70",
     [3] = nil,
