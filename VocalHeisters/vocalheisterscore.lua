@@ -40,7 +40,14 @@ if not VocalHeisters then
     end
     
     -- Immediately load and write data so that defaults exist
-    VocalHeisters:Load()
+    --VocalHeisters:Load()
+
+    -- If the config is corrupt, just calling Load() directly would cause an error and would *SILENTLY* prevent the below functions from being defined,
+    -- causing really sneaky crashes later on. By loading it in a separately included file instead, *that file* might give an error,
+    -- but the Save() call will then fix everything by overwriting it with default settings.
+    dofile(ModPath .. "loadconfig.lua")
+
+    -- Save settings right away to write new defaults and fix corrupt config files
     VocalHeisters:Save()
 
     -- Generic function that makes the player say a voice line
@@ -72,6 +79,8 @@ if not VocalHeisters then
     end
 
     -- Same as SayOnce *and* SayThirdPersonLine.
+    -- Says a voice line only if the diceroll hasn't been lost,
+    -- and allows the local player to hear lines that are normally thirdperson-only
     function VocalHeisters:SayOnceThirdPersonLine(voice_id)
         if not self.LostDiceRoll then
             self:SayThirdPersonLine(voice_id)
